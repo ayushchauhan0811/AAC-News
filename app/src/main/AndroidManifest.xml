@@ -52,7 +52,9 @@
             android:authorities="@string/content_authority"
             android:name=".data.NewsProvider"
             android:exported="false"
-            android:syncable="true" />.
+            android:syncable="true" />
+
+        <service android:name=".SourceService"/>
     </application>
 
 </manifest>
