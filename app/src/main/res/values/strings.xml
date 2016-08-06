@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AAC news</string>
+    <string name="sync_account_type">aacnews.ayush.com</string>
+    <string name="content_authority">com.capstone.ayush.aacnews</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
