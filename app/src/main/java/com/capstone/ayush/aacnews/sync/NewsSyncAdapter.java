@@ -91,6 +91,7 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Call
         NewsResultAPI newsResultAPI = retrofit.create(NewsResultAPI.class);
         Call<NewsResult> call = newsResultAPI.getNews(source, sortBy, MainActivity.apiKey);
         //asynchronous call
+        Log.e(LOG_TAG, "call = " + call.request().url().toString());
         call.enqueue(this);
 
         return;
