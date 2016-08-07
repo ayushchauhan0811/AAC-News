@@ -91,6 +91,7 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Call
         NewsResultAPI newsResultAPI = retrofit.create(NewsResultAPI.class);
         Call<NewsResult> call = newsResultAPI.getNews(source, sortBy, MainActivity.apiKey);
         //asynchronous call
+        Log.e(LOG_TAG, "call = " + call.request().url().toString());
         call.enqueue(this);
 
         return;
@@ -193,7 +194,6 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Call
         List<Articles> articlesList = newsResult.getArticles();
         Vector<ContentValues> cVVector = new Vector<ContentValues>();
 
-        Log.e("Size",""+articlesList.size());
         for(int i=0;i<articlesList.size();i++){
             String author = articlesList.get(i).getAuthor();
             String description = articlesList.get(i).getDescription();
@@ -202,7 +202,8 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Call
             String imageUrl = articlesList.get(i).getUrlToImage();
             String publishedAt = articlesList.get(i).getPublishedAt();
 
-            publishedAt = publishedAt.substring(0,10);
+            if(publishedAt!=null)
+                publishedAt = publishedAt.substring(0,10);
 
             ContentValues contentValues = new ContentValues();
             contentValues.put(NewsContract.NewsEntry.COLUMN_SOURCE,source);

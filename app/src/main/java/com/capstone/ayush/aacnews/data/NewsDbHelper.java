@@ -28,7 +28,7 @@ import com.capstone.ayush.aacnews.data.NewsContract.SourceEntry;
 public class NewsDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 3;
 
     static final String DATABASE_NAME = "news.db";
 
@@ -43,12 +43,12 @@ public class NewsDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_NEWS_TABLE = "CREATE TABLE " + NewsEntry.TABLE_NAME + " (" +
                 NewsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 NewsEntry.COLUMN_SOURCE + " TEXT NOT NULL, " +
-                NewsEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
-                NewsEntry.COLUMN_DESCRIPTION + " TEXT NOT NULL, " +
-                NewsEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
-                NewsEntry.COLUMN_URL + " TEXT NOT NULL, " +
-                NewsEntry.COLUMN_IMAGE_URL + " TEXT NOT NULL, " +
-                NewsEntry.COLUMN_PUBLISHED_AT + " TEXT NOT NULL " +
+                NewsEntry.COLUMN_AUTHOR + " TEXT , " +
+                NewsEntry.COLUMN_DESCRIPTION + " TEXT , " +
+                NewsEntry.COLUMN_TITLE + " TEXT , " +
+                NewsEntry.COLUMN_URL + " TEXT , " +
+                NewsEntry.COLUMN_IMAGE_URL + " TEXT , " +
+                NewsEntry.COLUMN_PUBLISHED_AT + " TEXT " +
                 " );";
 
         final String SQL_CREATE_SOURCE_TABLE = "CREATE TABLE " + SourceEntry.TABLE_NAME + " (" +

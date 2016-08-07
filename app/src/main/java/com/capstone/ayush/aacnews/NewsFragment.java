@@ -27,7 +27,7 @@ import com.capstone.ayush.aacnews.sync.NewsSyncAdapter;
 public class NewsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLayoutManager;
+    private RecyclerView.LayoutManager mLayoutManager;
     private NewsAdapter mAdapter;
     private View rootView;
     private String source;
@@ -54,7 +54,7 @@ public class NewsFragment extends Fragment implements LoaderManager.LoaderCallba
     public static final int COL_IMAGE_URL = 6;
     public static final int COL_PUBLISHED_AT = 7;
 
-    public static int mPosition;
+    public static int mPosition=0;
     private final String POSITION="position";
     private static final String SELECTED_KEY = "selected_position";
 
@@ -78,7 +78,7 @@ public class NewsFragment extends Fragment implements LoaderManager.LoaderCallba
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new NewsAdapter(getContext(),null);
+        mAdapter = new NewsAdapter(getActivity(),null);
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the
             // swapout in onLoadFinished.
@@ -114,8 +114,11 @@ public class NewsFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.swapCursor(data);
-        mRecyclerView.getLayoutManager().scrollToPosition(mPosition);
+        if(data.moveToFirst()){
+            Log.e("Data size",String.valueOf(data.getCount()));
+            mAdapter.swapCursor(data);
+            //mRecyclerView.getLayoutManager().scrollToPosition(mPosition);
+        }
     }
 
     @Override
