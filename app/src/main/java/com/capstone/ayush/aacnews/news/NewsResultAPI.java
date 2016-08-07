@@ -16,5 +16,5 @@ public interface NewsResultAPI {
                              @Query("sortBy") String sortBy,
                              @Query("apiKey") String apiKey);
 
-    
+
 }
