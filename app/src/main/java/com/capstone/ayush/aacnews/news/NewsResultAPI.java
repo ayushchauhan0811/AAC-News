@@ -11,7 +11,7 @@ import retrofit2.http.Query;
 public interface NewsResultAPI {
     String ENDPOINT = "https://newsapi.org";
 
-    @GET("/v1/articles?&&")
+    @GET("/v1/articles?")
     Call<NewsResult> getNews(@Query("source") String source,
                              @Query("sortBy") String sortBy,
                              @Query("apiKey") String apiKey);
