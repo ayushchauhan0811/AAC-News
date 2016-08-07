@@ -3,16 +3,14 @@
     package="com.capstone.ayush.aacnews">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission
-        android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
-    <permission android:name="com.capstone.aacnews.LICENSE_TO_KILL"
-        android:protectionLevel="dangerous"
-        android:label="Licensed to kill"/>
+    <permission
+        android:name="com.capstone.aacnews.LICENSE_TO_KILL"
+        android:label="Licensed to kill"
+        android:protectionLevel="dangerous" />
 
     <application
         android:allowBackup="true"
@@ -28,12 +26,11 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".sync.NewsAuthenticatorService"
-            >
+        <service android:name=".sync.NewsAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
@@ -44,15 +41,25 @@
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
         <provider
-            android:authorities="@string/content_authority"
             android:name=".data.NewsProvider"
+            android:authorities="@string/content_authority"
             android:exported="false"
-            android:syncable="true" />.
+            android:syncable="true" />
+
+        <service android:name=".SourceService" />
+
+        <activity android:name=".NewsActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

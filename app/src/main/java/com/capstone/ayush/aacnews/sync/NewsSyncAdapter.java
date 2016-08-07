@@ -5,180 +5,97 @@ import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncRequest;
 import android.content.SyncResult;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.capstone.ayush.aacnews.MainActivity;
 import com.capstone.ayush.aacnews.R;
+import com.capstone.ayush.aacnews.Utility;
+import com.capstone.ayush.aacnews.data.NewsContract;
+import com.capstone.ayush.aacnews.news.Articles;
+import com.capstone.ayush.aacnews.news.NewsResult;
+import com.capstone.ayush.aacnews.news.NewsResultAPI;
+import com.capstone.ayush.aacnews.source.SourceResult;
+import com.capstone.ayush.aacnews.source.SourceResultAPI;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
+import java.util.Vector;
 
-public class NewsSyncAdapter extends AbstractThreadedSyncAdapter {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Callback<NewsResult> {
     public final String LOG_TAG = NewsSyncAdapter.class.getSimpleName();
-    public static final String ACTION_DATA_UPDATED =
-            "com.example.android.sunshine.app.ACTION_DATA_UPDATED";
     // Interval at which to sync with the weather, in seconds.
     // 60 seconds (1 minute) * 180 = 3 hours
-    public static final int SYNC_INTERVAL = 60 * 180;
-    public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
-    private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-    private static final int WEATHER_NOTIFICATION_ID = 3004;
+    public static final int SYNC_INTERVAL = 60 * 60;
+    public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
 
+    private String source,sortBy;
 
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({LOCATION_STATUS_OK, LOCATION_STATUS_SERVER_DOWN, LOCATION_STATUS_SERVER_INVALID,  LOCATION_STATUS_UNKNOWN, LOCATION_STATUS_INVALID})
-    public @interface LocationStatus {}
-
-    public static final int LOCATION_STATUS_OK = 0;
-    public static final int LOCATION_STATUS_SERVER_DOWN = 1;
-    public static final int LOCATION_STATUS_SERVER_INVALID = 2;
-    public static final int LOCATION_STATUS_UNKNOWN = 3;
-    public static final int LOCATION_STATUS_INVALID = 4;
+    private Gson gson;
+    private Retrofit retrofit;
 
     public NewsSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
     }
 
     @Override
+    public void onResponse(Call<NewsResult> call, Response<NewsResult> response) {
+        int code = response.code();
+        if(code == 200){
+            NewsResult newsResult = response.body();
+            getNews(newsResult);
+        } else{
+            Log.e("Response",response.message());
+            Toast.makeText(getContext(), "Did not work: " + String.valueOf(code), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onFailure(Call<NewsResult> call, Throwable t) {
+        Toast.makeText(getContext(), "Nope", Toast.LENGTH_LONG).show();
+        Log.e("Throwable ",t.toString());
+    }
+
+
+    @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-//        Log.d(LOG_TAG, "Starting sync");
-//
-//        // We no longer need just the location String, but also potentially the latitude and
-//        // longitude, in case we are syncing based on a new Place Picker API result.
-//        Context context = getContext();
-//        String locationQuery = Utility.getPreferredLocation(context);
-//        String locationLatitude = String.valueOf(Utility.getLocationLatitude(context));
-//        String locationLongitude = String.valueOf(Utility.getLocationLongitude(context));
-//
-//        // These two need to be declared outside the try/catch
-//        // so that they can be closed in the finally block.
-//        HttpURLConnection urlConnection = null;
-//        BufferedReader reader = null;
-//
-//        // Will contain the raw JSON response as a string.
-//        String forecastJsonStr = null;
-//
-//        String format = "json";
-//        String units = "metric";
-//        int numDays = 14;
-//
-//        try {
-//            // Construct the URL for the OpenWeatherMap query
-//            // Possible parameters are avaiable at OWM's forecast API page, at
-//            // http://openweathermap.org/API#forecast
-//            final String FORECAST_BASE_URL =
-//                    "http://api.openweathermap.org/data/2.5/forecast/daily?";
-//            final String QUERY_PARAM = "q";
-//            final String LAT_PARAM = "lat";
-//            final String LON_PARAM = "lon";
-//            final String FORMAT_PARAM = "mode";
-//            final String UNITS_PARAM = "units";
-//            final String DAYS_PARAM = "cnt";
-//            final String APPID_PARAM = "APPID";
-//
-//            Uri.Builder uriBuilder = Uri.parse(FORECAST_BASE_URL).buildUpon();
-//
-//            // Instead of always building the query based off of the location string, we want to
-//            // potentially build a query using a lat/lon value. This will be the case when we are
-//            // syncing based off of a new location from the Place Picker API. So we need to check
-//            // if we have a lat/lon to work with, and use those when we do. Otherwise, the weather
-//            // service may not understand the location address provided by the Place Picker API
-//            // and the user could end up with no weather! The horror!
-//            if (Utility.isLocationLatLonAvailable(context)) {
-//                uriBuilder.appendQueryParameter(LAT_PARAM, locationLatitude)
-//                        .appendQueryParameter(LON_PARAM, locationLongitude);
-//            } else {
-//                uriBuilder.appendQueryParameter(QUERY_PARAM, locationQuery);
-//            }
-//
-//            Uri builtUri = uriBuilder.appendQueryParameter(FORMAT_PARAM, format)
-//                    .appendQueryParameter(UNITS_PARAM, units)
-//                    .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
-//                    .appendQueryParameter(APPID_PARAM, MainActivity.api_key)
-//                    .build();
-//
-//            URL url = new URL(builtUri.toString());
-//
-//            // Create the request to OpenWeatherMap, and open the connection
-//            urlConnection = (HttpURLConnection) url.openConnection();
-//            urlConnection.setRequestMethod("GET");
-//            urlConnection.connect();
-//
-//            // Read the input stream into a String
-//            InputStream inputStream = urlConnection.getInputStream();
-//            StringBuffer buffer = new StringBuffer();
-//            if (inputStream == null) {
-//                // Nothing to do.
-//                return;
-//            }
-//            reader = new BufferedReader(new InputStreamReader(inputStream));
-//
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-//                // But it does make debugging a *lot* easier if you print out the completed
-//                // buffer for debugging.
-//                buffer.append(line + "\n");
-//            }
-//
-//            if (buffer.length() == 0) {
-//                // Stream was empty.  No point in parsing.
-//                setLocationStatus(getContext(), LOCATION_STATUS_SERVER_DOWN);
-//                return;
-//            }
-//            forecastJsonStr = buffer.toString();
-//            getWeatherDataFromJson(forecastJsonStr, locationQuery);
-//        } catch (IOException e) {
-//            Log.e(LOG_TAG, "Error ", e);
-//            // If the code didn't successfully get the weather data, there's no point in attempting
-//            // to parse it.
-//            setLocationStatus(getContext(), LOCATION_STATUS_SERVER_DOWN);
-//        } catch (JSONException e) {
-//            Log.e(LOG_TAG, e.getMessage(), e);
-//            e.printStackTrace();
-//            setLocationStatus(getContext(), LOCATION_STATUS_SERVER_INVALID);
-//        } finally {
-//            if (urlConnection != null) {
-//                urlConnection.disconnect();
-//            }
-//            if (reader != null) {
-//                try {
-//                    reader.close();
-//                } catch (final IOException e) {
-//                    Log.e(LOG_TAG, "Error closing stream", e);
-//                }
-//            }
-//        }
+        Log.d(LOG_TAG, "Starting sync");
+        gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                .create();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(NewsResultAPI.ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        source = Utility.getSource(getContext());
+        sortBy = Utility.getSortBy(getContext());
+
+        NewsResultAPI newsResultAPI = retrofit.create(NewsResultAPI.class);
+        Call<NewsResult> call = newsResultAPI.getNews(source, sortBy, MainActivity.apiKey);
+        //asynchronous call
+        call.enqueue(this);
+
         return;
     }
 
-    /**
-     * Take the String representing the complete forecast in JSON Format and
-     * pull out the data we need to construct the Strings needed for the wireframes.
-     *
-     * Fortunately parsing is easy:  constructor takes the JSON string and converts it
-     * into an Object hierarchy for us.
-     */
-
-
-
-
-
-
-
-
-    /**
-     * Helper method to handle insertion of a new location in the weather database.
-     *
-     * @param locationSetting The location string used to request updates from the server.
-     * @param cityName A human-readable city name, e.g "Mountain View"
-     * @param lat the latitude of the city
-     * @param lon the longitude of the city
-     * @return the row ID of the added location.
-     */
 
     /**
      * Helper method to schedule the sync adapter periodic execution
@@ -201,6 +118,7 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Helper method to have the sync adapter sync immediately
+     *
      * @param context The context used to access the account service
      */
     public static void syncImmediately(Context context) {
@@ -229,7 +147,7 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter {
                 context.getString(R.string.app_name), context.getString(R.string.sync_account_type));
 
         // If the password doesn't exist, the account doesn't exist
-        if ( null == accountManager.getPassword(newAccount) ) {
+        if (null == accountManager.getPassword(newAccount)) {
 
         /*
          * Add the account and account type, no password or user data
@@ -271,11 +189,60 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter {
         getSyncAccount(context);
     }
 
-    /**
-     * Sets the location status into shared preference.  This function should not be called from
-     * the UI thread because it uses commit to write to the shared preferences.
-     * @param c Context to get the PreferenceManager from.
-     * @param locationStatus The IntDef value to set
-     */
+    void getNews(NewsResult newsResult){
+        List<Articles> articlesList = newsResult.getArticles();
+        Vector<ContentValues> cVVector = new Vector<ContentValues>();
+
+        Log.e("Size",""+articlesList.size());
+        for(int i=0;i<articlesList.size();i++){
+            String author = articlesList.get(i).getAuthor();
+            String description = articlesList.get(i).getDescription();
+            String title = articlesList.get(i).getTitle();
+            String url = articlesList.get(i).getUrl();
+            String imageUrl = articlesList.get(i).getUrlToImage();
+            String publishedAt = articlesList.get(i).getPublishedAt();
+
+            publishedAt = publishedAt.substring(0,10);
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(NewsContract.NewsEntry.COLUMN_SOURCE,source);
+            contentValues.put(NewsContract.NewsEntry.COLUMN_AUTHOR,author);
+            contentValues.put(NewsContract.NewsEntry.COLUMN_DESCRIPTION,description);
+            contentValues.put(NewsContract.NewsEntry.COLUMN_TITLE,title);
+            contentValues.put(NewsContract.NewsEntry.COLUMN_URL,url);
+            contentValues.put(NewsContract.NewsEntry.COLUMN_IMAGE_URL,imageUrl);
+            contentValues.put(NewsContract.NewsEntry.COLUMN_PUBLISHED_AT,publishedAt);
+
+            cVVector.add(contentValues);
+        }
+
+        int inserted = 0;
+        // add to database
+        if ( cVVector.size() > 0 ) {
+            // Student: call bulkInsert to add the weatherEntries to the database here
+            ContentValues[] cvArray = new ContentValues[cVVector.size()];
+            cVVector.toArray(cvArray);
+            Cursor c = getContext().getContentResolver().query(
+                    NewsContract.NewsEntry.CONTENT_URI,
+                    null,
+                    NewsContract.NewsEntry.COLUMN_SOURCE + " = ? ",
+                    new String[]{source},
+                    null
+            );
+            if (c != null) {
+                getContext().getContentResolver().delete(
+                        NewsContract.NewsEntry.CONTENT_URI,
+                        NewsContract.NewsEntry.COLUMN_SOURCE + " = ? ",
+                        new String[]{source}
+                );
+                c.close();
+            }
+            inserted = getContext().getContentResolver().bulkInsert(
+                    NewsContract.NewsEntry.CONTENT_URI,
+                    cvArray
+            );
+            Log.e(LOG_TAG, "Complete. " + inserted + " Inserted");
+        }
+    }
 
 }

@@ -1,8 +1,10 @@
 package com.capstone.ayush.aacnews.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +12,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.capstone.ayush.aacnews.MainActivity;
+import com.capstone.ayush.aacnews.NewsActivity;
 import com.capstone.ayush.aacnews.R;
 import com.capstone.ayush.aacnews.SourceFragment;
+import com.capstone.ayush.aacnews.Utility;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -54,11 +58,23 @@ public class SourcesAdapter extends RecyclerView.Adapter<SourcesAdapter.ViewHold
                 .load(cursor.getString(SourceFragment.COL_LOGO_URL))
                 .into(holder.sourceLogo);
 
+
+        holder.sourceLogo.setContentDescription(cursor.getString(SourceFragment.COL_NAME));
+
         holder.sourceLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Cursor cursor = mCursor;
-                Toast.makeText(context,cursor.getString(SourceFragment.COL_SORT_BY),Toast.LENGTH_SHORT).show();
+                cursor.moveToPosition(position);
+                String[] sortByKeys = cursor.getString(SourceFragment.COL_SORT_BY).split(",");
+                String mSortBykey = sortByKeys[0];
+                SourceFragment.mPosition = position;
+                Utility.setSource(context,cursor.getString(SourceFragment.COL_SOURCE_ID));
+                Utility.setSortBy(context,mSortBykey);
+                Log.e("Default Sort By",mSortBykey);
+                Intent intent = new Intent(context, NewsActivity.class);
+                intent.putExtra("sortBykeys",sortByKeys);
+                context.startActivity(intent);
             }
         });
 

@@ -1,8 +1,12 @@
 <resources>
-    <string name="app_name">AAC news</string>
+    <string name="app_name">AAC News</string>
     <string name="sync_account_type">aacnews.ayush.com</string>
     <string name="content_authority">com.capstone.ayush.aacnews</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="test_string">News API is a simple, predictable, easy-to-use API that returns JSON metadata for the headlines currently published on a range of news sources and blogs (26 and counting so far).</string>
+    <string name="top">Top</string>
+    <string name="popular">Popular</string>
+    <string name="latest">Latest</string>
 </resources>

@@ -59,6 +59,7 @@ public class NewsContract {
 
         // The location setting string is what will be sent to openweathermap
         // as the location query.
+        public static final String COLUMN_SOURCE = "source";
         public static final String COLUMN_AUTHOR = "author";
 
         // Human readable location string, provided by the API.  Because for styling,
@@ -95,7 +96,7 @@ public class NewsContract {
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_URL = "url";
         public static final String COLUMN_LOGO_URL = "logo_url";
-        public static final String COLUMN_SORT_BY = "order";
+        public static final String COLUMN_SORT_BY = "sort_by_available";
 
         public static Uri buildSourceUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

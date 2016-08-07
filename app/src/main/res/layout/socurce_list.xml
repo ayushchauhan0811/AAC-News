@@ -1,6 +1,7 @@
 <android.support.v7.widget.CardView
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -8,18 +9,20 @@
     card_view:cardCornerRadius="8dp"
     android:layout_marginBottom="16dp">
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_horizontal_margin">
 
         <ImageView
-            android:layout_width="0dp"
-            android:layout_weight=".5"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
             android:id="@+id/source_photo"
-            android:adjustViewBounds="true"/>
+            android:scaleType="fitCenter"
+            tools:src="@mipmap/ic_launcher"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center"/>
 
-    </LinearLayout>
+    </FrameLayout>
 
 </android.support.v7.widget.CardView>

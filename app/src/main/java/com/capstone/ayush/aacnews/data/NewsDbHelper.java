@@ -28,9 +28,9 @@ import com.capstone.ayush.aacnews.data.NewsContract.SourceEntry;
 public class NewsDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 5;
 
-    static final String DATABASE_NAME = "weather.db";
+    static final String DATABASE_NAME = "news.db";
 
     public NewsDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,7 +41,8 @@ public class NewsDbHelper extends SQLiteOpenHelper {
         // Create a table to hold locations.  A location consists of the string supplied in the
         // location setting, the city name, and the latitude and longitude
         final String SQL_CREATE_NEWS_TABLE = "CREATE TABLE " + NewsEntry.TABLE_NAME + " (" +
-                NewsEntry._ID + " INTEGER PRIMARY KEY," +
+                NewsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                NewsEntry.COLUMN_SOURCE + " TEXT NOT NULL, " +
                 NewsEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
                 NewsEntry.COLUMN_DESCRIPTION + " TEXT NOT NULL, " +
                 NewsEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
@@ -62,7 +63,7 @@ public class NewsDbHelper extends SQLiteOpenHelper {
                 SourceEntry.COLUMN_DESCRIPTION + " TEXT NOT NULL, " +
                 SourceEntry.COLUMN_URL + " TEXT NOT NULL, " +
                 SourceEntry.COLUMN_LOGO_URL + " TEXT NOT NULL, " +
-                SourceEntry.COLUMN_SORT_BY + "TEXT NOT NULL " +
+                SourceEntry.COLUMN_SORT_BY + " TEXT NOT NULL " +
                 " );";
 
         sqLiteDatabase.execSQL(SQL_CREATE_NEWS_TABLE);

@@ -75,8 +75,8 @@ public class SourceService extends IntentService implements Callback<SourceResul
 
     void getSource(SourceResult sourceResult){
         List<Source> sources = sourceResult.getSources();
-        Vector<ContentValues> cVVector = new Vector<ContentValues>(sources.size());
-        for(int i=0;i<cVVector.size();i++){
+        Vector<ContentValues> cVVector = new Vector<ContentValues>();
+        for(int i=0;i<sources.size();i++){
             String id = sources.get(i).getId();
             String name = sources.get(i).getName();
             String description = sources.get(i).getDescription();
@@ -85,11 +85,8 @@ public class SourceService extends IntentService implements Callback<SourceResul
             String order = "";
             List<String> sortByOrder = sources.get(i).getSortBysAvailable();
             for(int j=0;j<sortByOrder.size();j++){
-                order=order + sortByOrder.get(j);
-                if(j+1<sortByOrder.size())
-                    order = order + ",";
+                order=order + sortByOrder.get(j) + ",";
             }
-
             ContentValues sourceValue = new ContentValues();
             sourceValue.put(NewsContract.SourceEntry.COLUMN_SOURCE_ID,id);
             sourceValue.put(NewsContract.SourceEntry.COLUMN_NAME,name);

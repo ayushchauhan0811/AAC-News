@@ -1,7 +1,6 @@
 package com.capstone.ayush.aacnews;
 
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,52 +16,55 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.capstone.ayush.aacnews.adapter.SourcesAdapter;
+import com.capstone.ayush.aacnews.adapter.NewsAdapter;
 import com.capstone.ayush.aacnews.data.NewsContract;
+import com.capstone.ayush.aacnews.sync.NewsSyncAdapter;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SourceFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
-
+public class NewsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
-    private SourcesAdapter mAdapter;
+    private NewsAdapter mAdapter;
     private View rootView;
+    private String source;
 
-    private static final int SOURCE_LOADER = 0;
+    private static final int NEWS_LOADER = 0;
 
-    public static final String[] Source_COLUMNS = {
-        NewsContract.SourceEntry._ID,
-        NewsContract.SourceEntry.COLUMN_SOURCE_ID,
-        NewsContract.SourceEntry.COLUMN_NAME,
-        NewsContract.SourceEntry.COLUMN_DESCRIPTION,
-        NewsContract.SourceEntry.COLUMN_URL,
-        NewsContract.SourceEntry.COLUMN_LOGO_URL,
-        NewsContract.SourceEntry.COLUMN_SORT_BY
+    public static final String NEWS_COLUMN[] = {
+        NewsContract.NewsEntry._ID,
+        NewsContract.NewsEntry.COLUMN_SOURCE,
+        NewsContract.NewsEntry.COLUMN_AUTHOR,
+        NewsContract.NewsEntry.COLUMN_DESCRIPTION,
+        NewsContract.NewsEntry.COLUMN_TITLE,
+        NewsContract.NewsEntry.COLUMN_URL,
+        NewsContract.NewsEntry.COLUMN_IMAGE_URL,
+        NewsContract.NewsEntry.COLUMN_PUBLISHED_AT
     };
 
     public static final int COL_ID = 0;
-    public static final int COL_SOURCE_ID = 1;
-    public static final int COL_NAME = 2;
+    public static final int COL_SOURCE = 1;
+    public static final int COL_AUTHOR = 2;
     public static final int COL_DESCRIPTION = 3;
-    public static final int COL_URL = 4;
-    public static final int COL_LOGO_URL = 5;
-    public static final int COL_SORT_BY = 6;
+    public static final int COL_TITLE = 4;
+    public static final int COL_URL = 5;
+    public static final int COL_IMAGE_URL = 6;
+    public static final int COL_PUBLISHED_AT = 7;
 
     public static int mPosition;
     private final String POSITION="position";
     private static final String SELECTED_KEY = "selected_position";
 
-    public SourceFragment() {
+    public NewsFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(SOURCE_LOADER, null, this);
+        getLoaderManager().initLoader(NEWS_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -70,27 +72,26 @@ public class SourceFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_source, container, false);
-
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view_sources);
+        rootView =  inflater.inflate(R.layout.fragment_news, container, false);
+        source = Utility.getSource(getContext());
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view_news);
         mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new SourcesAdapter(getActivity(),null);
-        mRecyclerView.setAdapter(mAdapter);
+        mAdapter = new NewsAdapter(getContext(),null);
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the
             // swapout in onLoadFinished.
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
-        return rootView;
+        updateNews();
+        return  rootView;
     }
-
 
     @Override
     public void onResume() {
         super.onResume();
-        getLoaderManager().restartLoader(SOURCE_LOADER,null,this);
+        getLoaderManager().restartLoader(NEWS_LOADER,null,this);
     }
 
     @Override
@@ -102,12 +103,12 @@ public class SourceFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri sourceUri = NewsContract.SourceEntry.CONTENT_URI;
+        Uri newsUri = NewsContract.NewsEntry.CONTENT_URI;
         return new CursorLoader(getActivity(),
-                sourceUri,
-                Source_COLUMNS,
-                null,
-                null,
+                newsUri,
+                NEWS_COLUMN,
+                NewsContract.NewsEntry.COLUMN_SOURCE + " = ? ",
+                new String[]{source},
                 null);
     }
 
@@ -120,5 +121,16 @@ public class SourceFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPosition = mAdapter.getPosition();
+    }
+
+    public void updateNews(){
+        getLoaderManager().restartLoader(NEWS_LOADER,null,this);
+        NewsSyncAdapter.syncImmediately(getActivity());
     }
 }

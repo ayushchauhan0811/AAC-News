@@ -7,8 +7,8 @@ import retrofit2.http.GET;
  * Created by Ayush on 05-08-2016.
  */
 public interface SourceResultAPI {
-    String ENDPOINT = " https://newsapi.org/v1/sources";
+    String ENDPOINT = "https://newsapi.org";
 
-    @GET("/sources")
+    @GET("/v1/sources")
     Call<SourceResult> getSources();
 }
