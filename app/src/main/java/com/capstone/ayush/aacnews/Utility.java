@@ -34,4 +34,18 @@ public class Utility {
                 Context.MODE_PRIVATE);
         return preferences.getString("source", "googlenews");
     }
+
+    public static void setOrder(Context context, String choice) {
+        SharedPreferences preferences = context.getSharedPreferences(String.valueOf(R.string.content_authority),
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor e = preferences.edit();
+        e.putString("source", choice);
+        e.apply();
+    }
+
+    public static String getOrder(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(String.valueOf(R.string.content_authority),
+                Context.MODE_PRIVATE);
+        return preferences.getString("source", "top,");
+    }
 }

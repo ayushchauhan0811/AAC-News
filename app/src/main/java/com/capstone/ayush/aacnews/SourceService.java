@@ -32,6 +32,7 @@ public class SourceService extends IntentService implements Callback<SourceResul
     private Retrofit retrofit;
     private String LOG_TAG = SourceService.class.getSimpleName();
 
+
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      **/
@@ -122,7 +123,6 @@ public class SourceService extends IntentService implements Callback<SourceResul
                     NewsContract.SourceEntry.CONTENT_URI,
                     cvArray
             );
-            Log.e(LOG_TAG, "Complete. " + inserted + " Inserted");
         }
     }
 }

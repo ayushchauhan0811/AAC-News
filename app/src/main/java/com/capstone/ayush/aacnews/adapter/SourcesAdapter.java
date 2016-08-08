@@ -64,17 +64,22 @@ public class SourcesAdapter extends RecyclerView.Adapter<SourcesAdapter.ViewHold
         holder.sourceLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor cursor = mCursor;
-                cursor.moveToPosition(position);
-                String[] sortByKeys = cursor.getString(SourceFragment.COL_SORT_BY).split(",");
-                String mSortBykey = sortByKeys[0];
-                SourceFragment.mPosition = position;
-                Utility.setSource(context,cursor.getString(SourceFragment.COL_SOURCE_ID));
-                Utility.setSortBy(context,mSortBykey);
-                Log.e("Default Sort By",mSortBykey);
-                Intent intent = new Intent(context, NewsActivity.class);
-                intent.putExtra("sortBykeys",sortByKeys);
-                context.startActivity(intent);
+                if(MainActivity.isConnected){
+                    Cursor cursor = mCursor;
+                    cursor.moveToPosition(position);
+                    String[] sortByKeys = cursor.getString(SourceFragment.COL_SORT_BY).split(",");
+                    String mSortBykey = sortByKeys[0];
+                    Utility.setOrder(context,cursor.getString(SourceFragment.COL_SORT_BY));
+                    SourceFragment.mPosition = position;
+                    Utility.setSource(context,cursor.getString(SourceFragment.COL_SOURCE_ID));
+                    Utility.setSortBy(context,mSortBykey);
+                    Log.e("Default Sort By",mSortBykey);
+                    Intent intent = new Intent(context, NewsActivity.class);
+                    context.startActivity(intent);
+                } else {
+                    Toast.makeText(context,R.string.network_toast,Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

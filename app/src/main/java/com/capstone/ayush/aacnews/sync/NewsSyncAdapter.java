@@ -7,6 +7,7 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
@@ -45,6 +46,8 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Call
     // 60 seconds (1 minute) * 180 = 3 hours
     public static final int SYNC_INTERVAL = 60 * 60;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
+
+    public static final String ACTION_DATA_UPDATED = "com.capstone.ayush.aacnews.ACTION_DATA_UPDATED";
 
     private String source,sortBy;
 
@@ -91,7 +94,7 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Call
         NewsResultAPI newsResultAPI = retrofit.create(NewsResultAPI.class);
         Call<NewsResult> call = newsResultAPI.getNews(source, sortBy, MainActivity.apiKey);
         //asynchronous call
-        Log.e(LOG_TAG, "call = " + call.request().url().toString());
+        //Log.e(LOG_TAG, "call = " + call.request().url().toString());
         call.enqueue(this);
 
         return;
@@ -242,8 +245,16 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Call
                     NewsContract.NewsEntry.CONTENT_URI,
                     cvArray
             );
-            Log.e(LOG_TAG, "Complete. " + inserted + " Inserted");
+            updateWidgets();
         }
+    }
+
+    private void updateWidgets() {
+        Context context = getContext();
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                .setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
     }
 
 }

@@ -55,10 +55,32 @@
 
         <service android:name=".SourceService" />
 
-        <activity android:name=".NewsActivity"
+        <receiver
+            android:name=".widget.DetailWidgetProvider"
+            android:enabled="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.sam_chordas.android.stockhawk.ACTION_DATA_UPDATED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_detail" />
+        </receiver>
+
+        <activity
+            android:name=".NewsActivity"
+            android:label="@string/headlines"
             android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".DetailActivity"
+            android:parentActivityName=".NewsActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value=".NewsActivity"/>
         </activity>
     </application>
 

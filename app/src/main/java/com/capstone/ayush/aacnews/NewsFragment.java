@@ -13,13 +13,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.capstone.ayush.aacnews.adapter.NewsAdapter;
 import com.capstone.ayush.aacnews.data.NewsContract;
 import com.capstone.ayush.aacnews.sync.NewsSyncAdapter;
-
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,6 +36,9 @@ public class NewsFragment extends Fragment implements LoaderManager.LoaderCallba
     private NewsAdapter mAdapter;
     private View rootView;
     private String source;
+
+    private String[] mSortKeys;
+    private boolean mTop,mLatest,mPopular;
 
     private static final int NEWS_LOADER = 0;
 
@@ -69,23 +77,72 @@ public class NewsFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView =  inflater.inflate(R.layout.fragment_news, container, false);
+
+        mSortKeys = Utility.getOrder(getActivity()).split(",");
+        for (String mSortKey : mSortKeys) {
+            Log.e("Sort By",mSortKey);
+            if (mSortKey.equals(getResources().getString(R.string.top_tag))) {
+                mTop = true;
+            } else if (mSortKey.equals(getResources().getString(R.string.popular_tag))) {
+                mPopular = true;
+            } else if (mSortKey.equals(getResources().getString(R.string.latest_tag))) {
+                mLatest = true;
+            }
+        }
+
+        AdView mAdView = (AdView) rootView.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        mAdView.loadAd(adRequest);
+
         source = Utility.getSource(getContext());
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view_news);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new NewsAdapter(getActivity(),null);
+        mRecyclerView.setAdapter(mAdapter);
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
-            // The listview probably hasn't even been populated yet.  Actually perform the
-            // swapout in onLoadFinished.
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
         updateNews();
         return  rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.news_menu,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.action_top && mTop){
+            Utility.setSortBy(getContext(),getResources().getString(R.string.top_tag));
+            updateNews();
+        } else if(id == R.id.action_popular && mPopular){
+            Utility.setSortBy(getContext(),getResources().getString(R.string.popular_tag));
+            updateNews();
+        } else if(id == R.id.action_latest && mLatest){
+            Utility.setSortBy(getContext(),getResources().getString(R.string.latest_tag));
+            updateNews();
+        } else {
+            Toast.makeText(getContext(), R.string.sortBy_not_available,Toast.LENGTH_SHORT).show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -115,9 +172,8 @@ public class NewsFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data.moveToFirst()){
-            Log.e("Data size",String.valueOf(data.getCount()));
             mAdapter.swapCursor(data);
-            //mRecyclerView.getLayoutManager().scrollToPosition(mPosition);
+            mRecyclerView.getLayoutManager().scrollToPosition(mPosition);
         }
     }
 
@@ -135,5 +191,12 @@ public class NewsFragment extends Fragment implements LoaderManager.LoaderCallba
     public void updateNews(){
         getLoaderManager().restartLoader(NEWS_LOADER,null,this);
         NewsSyncAdapter.syncImmediately(getActivity());
+    }
+
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri newsUri);
     }
 }

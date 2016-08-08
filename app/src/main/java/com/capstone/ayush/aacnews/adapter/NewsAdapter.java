@@ -2,6 +2,7 @@ package com.capstone.ayush.aacnews.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.capstone.ayush.aacnews.NewsFragment;
 import com.capstone.ayush.aacnews.R;
+import com.capstone.ayush.aacnews.data.NewsContract;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -35,17 +37,32 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         final Context context = mContext;
         Cursor cursor = mCursor;
         cursor.moveToPosition(position);
-        Picasso.with(context)
-                .load(cursor.getString(NewsFragment.COL_IMAGE_URL))
-                .into(holder.newsImage);
-        holder.newsImage.setContentDescription("News Image");
+        if(cursor.getString(NewsFragment.COL_IMAGE_URL)!=null){
+            Picasso.with(context)
+                    .load(cursor.getString(NewsFragment.COL_IMAGE_URL))
+                    .into(holder.newsImage);
+        } else {
+            Picasso.with(context)
+                    .load(R.drawable.news_image)
+                    .into(holder.newsImage);
+        }
+        holder.newsImage.setContentDescription(context.getString(R.string.news_iamge));
         holder.newsTitle.setText(cursor.getString(NewsFragment.COL_TITLE));
         holder.newsTitle.setContentDescription(cursor.getString(NewsFragment.COL_TITLE));
 
+        holder.newsImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Cursor cursor = mCursor;
+                cursor.moveToPosition(position);
+                Uri newsUri = NewsContract.NewsEntry.buildNewsUri(cursor.getLong(NewsFragment.COL_ID));
+                ((NewsFragment.Callback)context).onItemSelected(newsUri);
+            }
+        });
 
     }
 
@@ -61,6 +78,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     }
 
     public int getPosition(){
+        if(mCursor==null)
+            return 0;
         return mCursor.getPosition();
     }
 

@@ -1,8 +1,11 @@
 package com.capstone.ayush.aacnews;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,6 +22,8 @@ import android.view.ViewGroup;
 
 import com.capstone.ayush.aacnews.adapter.SourcesAdapter;
 import com.capstone.ayush.aacnews.data.NewsContract;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 
 /**
@@ -71,6 +76,11 @@ public class SourceFragment extends Fragment implements LoaderManager.LoaderCall
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_source, container, false);
+        AdView mAdView = (AdView) rootView.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        mAdView.loadAd(adRequest);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view_sources);
         mRecyclerView.setHasFixedSize(true);

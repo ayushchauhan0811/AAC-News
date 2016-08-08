@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">AAC News</string>
-    <string name="sync_account_type">aacnews.ayush.com</string>
-    <string name="content_authority">com.capstone.ayush.aacnews</string>
+    <string name="app_name" translatable="false">AAC News</string>
+    <string name="sync_account_type" translatable="false">aacnews.ayush.com</string>
+    <string name="content_authority" translatable="false">com.capstone.ayush.aacnews</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -9,4 +9,15 @@
     <string name="top">Top</string>
     <string name="popular">Popular</string>
     <string name="latest">Latest</string>
+    <string name="headlines">HeadLines</string>
+
+    <string name="top_tag" translatable="false">top</string>
+    <string name="popular_tag" translatable="false">popular</string>
+    <string name="latest_tag" translatable="false">latest</string>
+    <string name="sortBy_not_available">This sort by feature is not available in this source</string>
+    <string name="news_image_desp">News Image</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="network_toast">Uh-oh! This app requires an internet connection</string>
+    <string name="empty_view_text">News not available</string>
+    <string name="news_iamge">News Image</string>
 </resources>
