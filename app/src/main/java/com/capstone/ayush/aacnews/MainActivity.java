@@ -19,7 +19,7 @@ import com.facebook.stetho.Stetho;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String apiKey = "13b146acfa6b4a24826e82d65c2ac92e";
+    public static String apiKey = "Add your news api key";
     public static boolean isConnected;
 
     @Override
