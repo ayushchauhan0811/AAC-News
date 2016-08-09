@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ga_trackingId">UA-81908013-1</string>
+    <bool name="ga_autoActivityTracking">true</bool>
+    <screenName name="com.capstone.ayush.aacnews.MainActivity">
+        Main screen
+    </screenName>
+    <screenName name="com.capstone.ayush.aacnews.NewsActivity">
+        News screen
+    </screenName>
+    <screenName name="com.capstone.ayush.aacnews.DetailActivity">
+        Detail screen
+    </screenName>
+</resources>

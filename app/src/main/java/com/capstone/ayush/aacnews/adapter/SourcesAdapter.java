@@ -11,12 +11,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.capstone.ayush.aacnews.MainActivity;
 import com.capstone.ayush.aacnews.NewsActivity;
 import com.capstone.ayush.aacnews.R;
 import com.capstone.ayush.aacnews.SourceFragment;
 import com.capstone.ayush.aacnews.Utility;
-import com.squareup.picasso.Picasso;
 
 /**
  * Created by Ayush on 06-08-2016.
@@ -54,7 +54,7 @@ public class SourcesAdapter extends RecyclerView.Adapter<SourcesAdapter.ViewHold
         final Context context = mContext;
         Cursor cursor = mCursor;
         cursor.moveToPosition(position);
-        Picasso.with(context)
+        Glide.with(context)
                 .load(cursor.getString(SourceFragment.COL_LOGO_URL))
                 .into(holder.sourceLogo);
 

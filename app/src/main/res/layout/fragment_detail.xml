@@ -48,14 +48,6 @@
             tools:text="@string/test_string"
             android:padding="@dimen/activity_vertical_margin"/>
 
-        <com.google.android.gms.ads.AdView
-            android:id="@+id/adView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            ads:adSize="BANNER"
-            ads:adUnitId="@string/banner_ad_unit_id">
-        </com.google.android.gms.ads.AdView>
     </LinearLayout>
 </ScrollView>
 

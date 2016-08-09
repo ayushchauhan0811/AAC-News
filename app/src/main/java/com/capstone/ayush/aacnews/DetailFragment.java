@@ -15,10 +15,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.capstone.ayush.aacnews.data.NewsContract;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.squareup.picasso.Picasso;
 
 
 /**
@@ -74,11 +72,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         View rootView =  inflater.inflate(R.layout.fragment_detail, container, false);
         Intent intent = getActivity().getIntent();
         mNewsUri = intent.getData();
-        AdView mAdView = (AdView) rootView.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .build();
-        mAdView.loadAd(adRequest);
         newsImage = (ImageView) rootView.findViewById(R.id.news_photo);
         newsTitle = (TextView) rootView.findViewById(R.id.news_title);
         newsDesp = (TextView) rootView.findViewById(R.id.news_description);
@@ -100,11 +93,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data.moveToFirst()){
             if(data.getString(COL_IMAGE_URL)!=null){
-                Picasso.with(getContext())
+                Glide.with(getContext())
                         .load(data.getString(COL_IMAGE_URL))
                         .into(newsImage);
             } else {
-                Picasso.with(getContext())
+                Glide.with(getContext())
                         .load(R.drawable.news_image)
                         .into(newsImage);
             }

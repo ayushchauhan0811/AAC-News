@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.capstone.ayush.aacnews.NewsFragment;
 import com.capstone.ayush.aacnews.R;
 import com.capstone.ayush.aacnews.data.NewsContract;
-import com.squareup.picasso.Picasso;
 
 /**
  * Created by Ayush on 07-08-2016.
@@ -42,11 +42,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         Cursor cursor = mCursor;
         cursor.moveToPosition(position);
         if(cursor.getString(NewsFragment.COL_IMAGE_URL)!=null){
-            Picasso.with(context)
+            Glide.with(context)
                     .load(cursor.getString(NewsFragment.COL_IMAGE_URL))
                     .into(holder.newsImage);
         } else {
-            Picasso.with(context)
+            Glide.with(context)
                     .load(R.drawable.news_image)
                     .into(holder.newsImage);
         }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.capstone.ayush.aacnews">
+    package="com.capstone.ayush.aacnews" >
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
@@ -13,12 +14,13 @@
         android:protectionLevel="dangerous" />
 
     <application
+        android:name=".NewsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        android:theme="@style/AppTheme" >
+        <activity android:name=".MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,7 +28,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".sync.NewsAuthenticatorService">
+        <service android:name=".sync.NewsAuthenticatorService" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -37,7 +39,7 @@
         </service>
         <service
             android:name=".sync.NewsSyncService"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -58,30 +60,42 @@
         <receiver
             android:name=".widget.DetailWidgetProvider"
             android:enabled="true"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.sam_chordas.android.stockhawk.ACTION_DATA_UPDATED" />
+                <action android:name="com.example.android.sunshine.app.ACTION_DATA_UPDATED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info_detail" />
         </receiver>
 
+        <service
+            android:name=".widget.DetailWidgetRemoteViewsService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <activity
             android:name=".NewsActivity"
             android:label="@string/headlines"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".DetailActivity"
-            android:parentActivityName=".NewsActivity">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".NewsActivity"/>
+            android:parentActivityName=".NewsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".NewsActivity" />
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
