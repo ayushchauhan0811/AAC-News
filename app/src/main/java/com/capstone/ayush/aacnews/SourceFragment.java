@@ -107,7 +107,6 @@ public class SourceFragment extends Fragment implements LoaderManager.LoaderCall
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(POSITION,mPosition);
-        Log.v(SourceFragment.class.getSimpleName(),mPosition+"saved");
     }
 
     @Override

@@ -91,7 +91,6 @@ public class NewsFragment extends Fragment implements LoaderManager.LoaderCallba
 
         mSortKeys = Utility.getOrder(getActivity()).split(",");
         for (String mSortKey : mSortKeys) {
-            Log.e("Sort By",mSortKey);
             if (mSortKey.equals(getResources().getString(R.string.top_tag))) {
                 mTop = true;
             } else if (mSortKey.equals(getResources().getString(R.string.popular_tag))) {
@@ -155,7 +154,6 @@ public class NewsFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(POSITION,mPosition);
-        Log.v(SourceFragment.class.getSimpleName(),mPosition+"saved");
     }
 
     @Override

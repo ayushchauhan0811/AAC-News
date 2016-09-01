@@ -65,7 +65,6 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Call
             NewsResult newsResult = response.body();
             getNews(newsResult);
         } else{
-            Log.e("Response",response.message());
             Toast.makeText(getContext(), "Did not work: " + String.valueOf(code), Toast.LENGTH_LONG).show();
         }
     }
@@ -73,13 +72,11 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Call
     @Override
     public void onFailure(Call<NewsResult> call, Throwable t) {
         Toast.makeText(getContext(), "Nope", Toast.LENGTH_LONG).show();
-        Log.e("Throwable ",t.toString());
     }
 
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        Log.d(LOG_TAG, "Starting sync");
         gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .create();
@@ -93,8 +90,6 @@ public class NewsSyncAdapter extends AbstractThreadedSyncAdapter implements Call
 
         NewsResultAPI newsResultAPI = retrofit.create(NewsResultAPI.class);
         Call<NewsResult> call = newsResultAPI.getNews(source, sortBy, MainActivity.apiKey);
-        //asynchronous call
-        //Log.e(LOG_TAG, "call = " + call.request().url().toString());
         call.enqueue(this);
 
         return;

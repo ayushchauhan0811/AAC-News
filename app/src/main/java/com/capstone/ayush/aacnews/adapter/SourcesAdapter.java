@@ -73,7 +73,6 @@ public class SourcesAdapter extends RecyclerView.Adapter<SourcesAdapter.ViewHold
                     SourceFragment.mPosition = position;
                     Utility.setSource(context,cursor.getString(SourceFragment.COL_SOURCE_ID));
                     Utility.setSortBy(context,mSortBykey);
-                    Log.e("Default Sort By",mSortBykey);
                     Intent intent = new Intent(context, NewsActivity.class);
                     context.startActivity(intent);
                 } else {
